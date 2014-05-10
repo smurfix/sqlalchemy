@@ -127,17 +127,14 @@ class scoped_session(object):
         """
         class query(object):
             def __get__(s, instance, owner):
-                try:
-                    mapper = class_mapper(owner)
-                    if mapper:
-                        if query_cls:
-                            # custom query class
-                            return query_cls(mapper, session=self.registry())
-                        else:
-                            # session's configured query class
-                            return self.registry().query(mapper)
-                except orm_exc.UnmappedClassError:
-                    return None
+                mapper = class_mapper(owner)
+                if mapper:
+                    if query_cls:
+                        # custom query class
+                        return query_cls(mapper, session=self.registry())
+                    else:
+                        # session's configured query class
+                        return self.registry().query(mapper)
         return query()
 
 ScopedSession = scoped_session
