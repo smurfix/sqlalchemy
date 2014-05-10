@@ -31,7 +31,7 @@ Base = declarative_base()
 root = "./dogpile_data/"
 
 if not os.path.exists(root):
-    input("Will create datafiles in %r.\n"
+    raw_input("Will create datafiles in %r.\n"
                 "To reset the cache + database, delete this directory.\n"
                 "Press enter to continue.\n" % root
                 )
