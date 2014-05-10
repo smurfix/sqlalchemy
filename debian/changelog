@@ -1,3 +1,9 @@
+sqlalchemy (0.9.4+smurf1-1) smurf; urgency=medium
+
+  * Import do-not-hide-errors patch.
+
+ -- Matthias Urlichs <matthias@urlichs.de>  Sat, 10 May 2014 21:44:34 +0200
+
 sqlalchemy (0.9.4-1) unstable; urgency=medium
 
   * New upstream release

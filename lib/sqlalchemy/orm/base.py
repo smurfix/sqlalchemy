@@ -346,17 +346,13 @@ _state_mapper = util.dottedgetter('manager.mapper')
 
 @inspection._inspects(type)
 def _inspect_mapped_class(class_, configure=False):
-    try:
-        class_manager = manager_of_class(class_)
-        if not class_manager.is_mapped:
-            return None
-        mapper = class_manager.mapper
-        if configure and mapper._new_mappers:
-            mapper._configure_all()
-        return mapper
-
-    except exc.NO_STATE:
+    class_manager = manager_of_class(class_)
+    if class_manager is None or not class_manager.is_mapped:
         return None
+    mapper = class_manager.mapper
+    if configure and mapper._new_mappers:
+        mapper._configure_all()
+    return mapper
 
 def class_mapper(class_, configure=True):
     """Given a class, return the primary :class:`.Mapper` associated
@@ -375,7 +371,16 @@ def class_mapper(class_, configure=True):
     :class:`sqlalchemy.exc.NoInspectionAvailable` if the class is not mapped.
 
     """
-    mapper = _inspect_mapped_class(class_, configure=configure)
+    # The double isinstance() dance here makes sure that
+    # errors which occur while mapping an otherwise-legitimate
+    # class are passed through to the user.
+    try:
+        mapper = _inspect_mapped_class(class_, configure=configure)
+    except exc.NO_STATE:
+        if isinstance(class_, type):
+            raise
+        else:
+            mapper = None
     if mapper is None:
         if not isinstance(class_, type):
             raise sa_exc.ArgumentError(
